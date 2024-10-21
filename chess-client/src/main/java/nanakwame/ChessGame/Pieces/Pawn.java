@@ -15,6 +15,10 @@ public class Pawn extends Piece {
         moved = false;
     }
 
+    public void setMoved() {
+        moved = true;
+    }
+
     @Override
     public HashSet<Coordinate> getMoves(Piece[][] board) {
         HashSet<Coordinate> validMoves = new HashSet<Coordinate>();

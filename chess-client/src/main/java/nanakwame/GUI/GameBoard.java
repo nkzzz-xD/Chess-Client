@@ -32,8 +32,6 @@ public class GameBoard extends JPanel{
     //Represents selction mode(true) or deselecting mode (false)
     private boolean selecting;
 
-    private HashSet<Coordinate> availableMoves;
-
     public GameBoard() {
         setPreferredSize(new Dimension(DEFAULT_SIDE_LENGTH, DEFAULT_SIDE_LENGTH));
         setBackground(Color.RED);
@@ -43,7 +41,6 @@ public class GameBoard extends JPanel{
         logicalBoard = new Board();
         squarePadding = DEFAULT_SQUARE_PADDING;
         selecting = true;
-        availableMoves = new HashSet<Coordinate>();
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -61,7 +58,8 @@ public class GameBoard extends JPanel{
                     return;
                 }
                 else if (logicalBoard.getPiece(columnIndex, rowIndex) != null && 
-                    logicalBoard.getPiece(columnIndex, rowIndex).getOwner()  == logicalBoard.getCurrentPlayer()){
+                    logicalBoard.getPiece(columnIndex, rowIndex).getOwner()  == logicalBoard.getCurrentPlayer() &&
+                    !logicalBoard.getPiece(columnIndex, rowIndex).getMoves(logicalBoard.getPieces()).isEmpty()){
                     hoveredCellX = columnIndex;
                     hoveredCellY = rowIndex;
                 }
@@ -78,6 +76,8 @@ public class GameBoard extends JPanel{
                 hoveredCellX = -1;
                 hoveredCellY = -1;
                 repaint();
+                selectedCellX = -1;
+                selectedCellY = -1;
             }
 
             @Override
@@ -93,11 +93,8 @@ public class GameBoard extends JPanel{
                 if(columnIndex == selectedCellX && rowIndex == selectedCellY) {
                     selecting = false;
                 }
-                if (logicalBoard.getPiece(columnIndex, rowIndex) != null && 
-                    logicalBoard.getPiece(columnIndex, rowIndex).getOwner() == logicalBoard.getCurrentPlayer()) {
-                    selectedCellX = columnIndex;
-                    selectedCellY = rowIndex; 
-                }
+                selectedCellX = columnIndex;
+                selectedCellY = rowIndex; 
             }
 
             @Override
@@ -111,21 +108,38 @@ public class GameBoard extends JPanel{
                     columnIndex = 0;
                 }
                 if (columnIndex == selectedCellX && rowIndex == selectedCellY) {
-                    if(!selecting) {
+                    Piece piece = logicalBoard.getPiece(columnIndex, rowIndex);
+                    if (piece != null && 
+                        piece.getOwner() != logicalBoard.getCurrentPlayer() && !logicalBoard.getAvailableMoves().contains(piece.getPosition())) {
+                    
                         selectedCellX = -1;
                         selectedCellY = -1;
-                        selecting = true;
-                        availableMoves = new HashSet<Coordinate>();
+                        // selecting = true;
+                        logicalBoard.resetAvailableMoves();
+                    }
+                    else if(!selecting) {
+                        selectedCellX = -1;
+                        selectedCellY = -1;
+                        // selecting = true;
+                        logicalBoard.resetAvailableMoves();
                     }
                     else {
-                        updateAvailableMoves();
+                        System.out.println("Attempt to move");
+                        if (logicalBoard.move(columnIndex, rowIndex)) {
+                            selectedCellX = -1;
+                            selectedCellY = -1;
+                        }
+                        else logicalBoard.updateAvailableMoves(selectedCellX,selectedCellY);
                     }
+                    
                 }
                 else {
                     selectedCellX = -1;
                     selectedCellY = -1;
-                    availableMoves = new HashSet<Coordinate>();
+                    // selecting = true;
+                    logicalBoard.resetAvailableMoves();
                 }
+                selecting = true;
                 repaint();
             }
         });
@@ -138,15 +152,15 @@ public class GameBoard extends JPanel{
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        System.out.println("Repainting");
+        // System.out.println("Repainting");
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 Coordinate thisCoord = new Coordinate(x, y);
                 // System.out.println("This coord " + thisCoord);
                 Piece currentPiece = logicalBoard.getPiece(x,y);
                 //TODO Change the opacity instead of the colour
-                if (availableMoves.contains(thisCoord)) {
-                    System.out.println("Contains");
+                if (logicalBoard.getAvailableMoves().contains(thisCoord)) {
+                    // System.out.println("Contains");
                     g.setColor(Color.GREEN);
                 }
                 else if (x == selectedCellX && y == selectedCellY && currentPiece != null) {
@@ -170,14 +184,5 @@ public class GameBoard extends JPanel{
                 }
             }
         }
-    }
-
-    public void updateAvailableMoves() {
-        availableMoves = logicalBoard.getMoves(selectedCellX, selectedCellY);
-        System.out.println("Available moves updated. " + availableMoves.size() + " available moves");
-        for (Coordinate coordinate : availableMoves) {
-            System.out.println(coordinate);
-        }
-        System.out.println("Current piece " + logicalBoard.getPiece(selectedCellX, selectedCellY));
     }
 }
