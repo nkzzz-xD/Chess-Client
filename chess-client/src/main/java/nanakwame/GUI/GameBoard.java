@@ -69,15 +69,35 @@ public class GameBoard extends JPanel{
                 }
                 repaint();
             }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int columnIndex = (e.getX() - 1) / squareLength;
+                int rowIndex = (e.getY() - 1) / squareLength;
+                if (rowIndex < 0) {
+                    rowIndex = 0;
+                }
+                if (columnIndex < 0) {
+                    columnIndex = 0;
+                }
+                if (columnIndex != selectedCellX || rowIndex != selectedCellY) {
+                    hoveredCellX = -1;
+                    hoveredCellY = -1;
+                    selectedCellX = -1;
+                    selectedCellY = -1;
+                    logicalBoard.resetAvailableMoves();
+                    repaint();
+                }
+            }
         });
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent e) {
                 hoveredCellX = -1;
                 hoveredCellY = -1;
-                repaint();
                 selectedCellX = -1;
                 selectedCellY = -1;
+                repaint();
             }
 
             @Override
@@ -94,7 +114,8 @@ public class GameBoard extends JPanel{
                     selecting = false;
                 }
                 selectedCellX = columnIndex;
-                selectedCellY = rowIndex; 
+                selectedCellY = rowIndex;
+                logicalBoard.updateAvailableMoves(selectedCellX, selectedCellY);
             }
 
             @Override
@@ -109,38 +130,28 @@ public class GameBoard extends JPanel{
                 }
                 if (columnIndex == selectedCellX && rowIndex == selectedCellY) {
                     Piece piece = logicalBoard.getPiece(columnIndex, rowIndex);
-                    if (piece != null && 
-                        piece.getOwner() != logicalBoard.getCurrentPlayer() && !logicalBoard.getAvailableMoves().contains(piece.getPosition())) {
-                    
-                        selectedCellX = -1;
-                        selectedCellY = -1;
-                        // selecting = true;
-                        logicalBoard.resetAvailableMoves();
-                    }
-                    else if(!selecting) {
-                        selectedCellX = -1;
-                        selectedCellY = -1;
-                        // selecting = true;
-                        logicalBoard.resetAvailableMoves();
-                    }
-                    else {
+                    boolean bool = !((!logicalBoard.getAvailableMoves().contains(new Coordinate(columnIndex, rowIndex)) && piece != null && 
+                    piece.getOwner() != logicalBoard.getCurrentPlayer())
+                    || (piece != null && piece.getMoves(logicalBoard.getPieces()).isEmpty()) || !selecting);
+                    if (bool) {
                         System.out.println("Attempt to move");
                         if (logicalBoard.move(columnIndex, rowIndex)) {
                             selectedCellX = -1;
                             selectedCellY = -1;
                         }
                         else logicalBoard.updateAvailableMoves(selectedCellX,selectedCellY);
+                        selecting = true;
+                        repaint();
+                        return;
                     }
                     
-                }
-                else {
                     selectedCellX = -1;
                     selectedCellY = -1;
                     // selecting = true;
                     logicalBoard.resetAvailableMoves();
+                    selecting = true;
+                    repaint();
                 }
-                selecting = true;
-                repaint();
             }
         });
     }
