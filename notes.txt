@@ -1,0 +1,56 @@
+//Maybe remove the y < 7 and catch the index out of bounds except?
+        //TODO Fix the nesting
+        for(int i = 0; i < boardString.length() && x < 7 && y <7 ; i++){
+            if(multiplePieceMode){
+                if(!Character.isDigit(boardString.charAt(i))){
+                    if(boardString.charAt(i) == ')'){
+                        multiplePieceMode = false;
+                        while(pieceMultiplier-- > 0){
+                            //instantiate class and put it in the 2d array
+                            Class<? extends Piece> clazz = pieceMap.getOrDefault(boardString.charAt(i), null);
+                            if (clazz != null){
+                                try {
+                                    clazz.getConstructor(Integer.class,Integer.class,Owner.class).newInstance(x,y,currentPlayer);
+                                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                                        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                                    // TODO Auto-generated catch block
+                                    e.printStackTrace();
+                                }
+                            }
+                            //increment x and y;
+                        }
+                    }
+                    //TODO Change to invalid board config exception
+                    throw new RuntimeException();
+                }
+                else {
+                    pieceMultiplier = pieceMultiplier * 10 + boardString.charAt(i) - '0';
+                }
+                continue;
+            }
+            switch (boardString.charAt(i)) {
+                case '1':
+                    currentPlayer = Owner.PLAYER_1;
+                    break;
+                case '2':
+                    currentPlayer = Owner.PLAYER_2;
+                    break;
+                case '.':
+                    //increment x
+                    break;
+                case '(':
+                    multiplePieceMode = true;
+                default:
+                    Class<? extends Piece> clazz = pieceMap.getOrDefault(boardString.charAt(i), null);
+                    if (clazz != null){
+                        try {
+                            clazz.getConstructor(Integer.class,Integer.class,Owner.class).newInstance(x,y,currentPlayer);
+                        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+                                | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+            }
+        }
