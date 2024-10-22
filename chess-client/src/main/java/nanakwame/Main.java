@@ -2,11 +2,11 @@ package nanakwame;
 
 import javax.swing.SwingUtilities;
 import nanakwame.GUI.ApplicationWindow;
+import nanakwame.GUI.Images;
 
 public class Main {
     public static void main(String[] args) {
-        // System.out.println("Hello world!");
-        // new Board();
+        Images.loadTexturesFromZip("default-textures.zip",true);
         SwingUtilities.invokeLater(ApplicationWindow :: new);
     }
 }

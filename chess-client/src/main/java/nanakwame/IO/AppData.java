@@ -13,7 +13,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.imageio.ImageIO;
 
-import nanakwame.GUI.Textures;
+import nanakwame.GUI.Images;
 
 public class AppData {
     public static String appDataPath;
@@ -29,7 +29,7 @@ public class AppData {
         System.out.println("Loading textures...");
         InputStream is = null;
         if (loadDefaults) {
-            is = Textures.class.getResourceAsStream("/" + TEXTURE_FOLDER_NAME + "/" + zipFile);
+            is = Images.class.getResourceAsStream("/" + TEXTURE_FOLDER_NAME + "/" + zipFile);
         } else
             try {
                 //TODO Fix exception handling

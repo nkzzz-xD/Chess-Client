@@ -61,6 +61,7 @@ public class Board {
             availableMoves = getMoves(x, y);
             selectedPiece = getPiece(x, y);
             System.out.println("Available moves updated. " + availableMoves.size() + " available moves");
+            System.out.println("Selected piece: " + selectedPiece);
             for (Coordinate coordinate : availableMoves) {
                 System.out.println(coordinate);
             }

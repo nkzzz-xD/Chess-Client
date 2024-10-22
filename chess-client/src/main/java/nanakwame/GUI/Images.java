@@ -7,14 +7,14 @@ import java.util.HashSet;
 
 import nanakwame.IO.AppData;
 
-public class Textures {
+public class Images {
     
     //TODO Add texture packs
     private static HashMap<String, BufferedImage> textures = new HashMap<>();
 
     private static final HashSet<String> EXPECTED_TEXTURES = 
     new HashSet<String>(Arrays.asList("PLAYER_1_Rook.png", "PLAYER_1_Bishop.png", "PLAYER_1_Knight.png","PLAYER_1_Queen.png","PLAYER_1_King.png","PLAYER_1_Pawn.png",
-        "PLAYER_2_Rook.png", "PLAYER_2_Bishop.png", "PLAYER_2_Knight.png","PLAYER_2_Queen.png","PLAYER_2_King.png","PLAYER_2_Pawn.png"));
+        "PLAYER_2_Rook.png", "PLAYER_2_Bishop.png", "PLAYER_2_Knight.png","PLAYER_2_Queen.png","PLAYER_2_King.png","PLAYER_2_Pawn.png","title-bg.png"));
 
     //Pawn -<a href="https://www.flaticon.com/free-icons/chess" title="chess icons">Chess icons created by Andrejs Kirma - Flaticon</a>
     //Rook -<a href="https://www.flaticon.com/free-icons/chess" title="chess icons">Chess icons created by deemakdaksina - Flaticon</a>
